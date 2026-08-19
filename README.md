@@ -19,10 +19,7 @@ All text content (name, contact info, experience, projects, skills, certificatio
 one place: [`lib/data.ts`](lib/data.ts). Edit that file to update the site — you shouldn't need
 to touch the components for content changes.
 
-Two things to fill in there before you go live:
-
-- `profile.github` and `profile.linkedin` — currently placeholders, replace with your real URLs.
-- Each project's `codeHref` / `liveHref` — add real repo and live-demo links as they're ready.
+Each project's `liveHref` is still empty — add a live-demo link per project as they go online.
 
 ## Setting up the contact form (EmailJS)
 
@@ -30,8 +27,8 @@ The contact form uses [EmailJS](https://www.emailjs.com/) to send messages strai
 inbox from the browser, with no backend required.
 
 1. Create a free account at https://www.emailjs.com/.
-2. Add an **Email Service** (e.g. connect your Gmail — `Khanalbk18@gmail.com`) and note the
-   **Service ID**.
+2. Add an **Email Service** (e.g. connect your Gmail — `bikashkhanal.official1@gmail.com`) and
+   note the **Service ID**.
 3. Create an **Email Template** with `name`, `email`, `subject`, and `message` variables
    matching the form fields in [`components/Contact.tsx`](components/Contact.tsx), and note the
    **Template ID**.
@@ -52,6 +49,12 @@ variable settings.
 
 ## Deploying
 
-The easiest option is [Vercel](https://vercel.com/new) — import this repo, add the three
-`NEXT_PUBLIC_EMAILJS_*` environment variables, and deploy. Any host that supports Next.js
-(Netlify, your own server, etc.) works too.
+**To babbal.host (cPanel "Setup Node.js App"):** see [DEPLOY.md](DEPLOY.md) for the full
+step-by-step guide. This repo includes a [`server.js`](server.js) built specifically for that
+setup (cPanel's Node.js Selector runs on Phusion Passenger, which needs a custom server entry
+point rather than the default `next start`).
+
+Any other Node.js host works the same way: `npm install`, set the `NEXT_PUBLIC_EMAILJS_*` env
+vars, `npm run build`, then `npm run start`. [Vercel](https://vercel.com/new) is the simplest
+option if you'd rather not manage a server at all — import the repo, add the three env vars, and
+deploy.
