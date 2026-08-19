@@ -33,19 +33,33 @@ cPanel → **Setup Node.js App** → *Create Application*:
 Don't click Create yet if you plan to set environment variables — see step 3 first (or add them
 after and just rebuild).
 
-## 3. Environment variables (only if you've set up the EmailJS contact form)
+## 3. Environment variables (for the contact form to actually send email)
 
-In the same "Setup Node.js App" screen there's an **Environment Variables** section. Add:
+The contact form is handled entirely by your own server — a Next.js API route
+([`app/api/contact/route.ts`](app/api/contact/route.ts)) sends mail via Gmail SMTP using
+[Nodemailer](https://nodemailer.com/). No third-party service, no signup, no paid plan.
+
+**Get a Gmail App Password first** (takes 2 minutes, completely free):
+1. On the Gmail account you want to send from (e.g. `bikashkhanal.official1@gmail.com`), turn on
+   **2-Step Verification**: https://myaccount.google.com/security
+2. Then go to **App Passwords**: https://myaccount.google.com/apppasswords
+3. Create one (name it anything, e.g. "Portfolio Contact Form") — Google gives you a 16-character
+   password. Copy it.
+
+In the "Setup Node.js App" screen there's an **Environment Variables** section. Add:
 
 ```
-NEXT_PUBLIC_EMAILJS_SERVICE_ID=your_service_id
-NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=your_template_id
-NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=your_public_key
+SMTP_USER=bikashkhanal.official1@gmail.com
+SMTP_APP_PASSWORD=the_16_character_app_password
+CONTACT_TO_EMAIL=bikashkhanal.official1@gmail.com
 ```
 
-**Important:** because these are `NEXT_PUBLIC_*` variables, Next.js bakes them into the built
-JavaScript at **build time**, not read at runtime. Set them here *before* you run `npm run build`
-in step 5. If you add/change them later, you must rebuild (step 5) and restart (step 6) again.
+(`CONTACT_TO_EMAIL` is where messages get delivered — same address as `SMTP_USER` unless you want
+them sent to a different inbox.)
+
+Unlike the old EmailJS setup, these are **server-only** variables (no `NEXT_PUBLIC_` prefix), so
+they're read at runtime, not baked in at build time — you can add or change them any time and just
+**Restart** the app (no rebuild needed).
 
 Click **Create**.
 
@@ -96,7 +110,10 @@ site should load.
   containing it.
 - **Blank page or old content after a change** — you likely skipped the rebuild step. `git pull`
   alone does not rebuild; you must run `npm run build` and then **Restart**.
-- **Contact form says "not configured yet"** — the `NEXT_PUBLIC_EMAILJS_*` env vars weren't set
-  before the last build. Set them in step 3, rebuild, restart.
+- **Contact form says "not configured yet"** — `SMTP_USER` / `SMTP_APP_PASSWORD` aren't set. Add
+  them (step 3) and **Restart** (no rebuild needed, they're read at runtime).
+- **Contact form fails with an auth error** — double-check you used an **App Password**, not your
+  regular Gmail password (Gmail rejects normal passwords for SMTP). Regenerate one at
+  https://myaccount.google.com/apppasswords if needed.
 - **Node version errors during install/build** — this project needs Node ≥ 20.9. If cPanel only
   offers older versions, ask babbal.host support to add a newer Node.js version to the selector.

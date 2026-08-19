@@ -1,6 +1,5 @@
 "use client";
 
-import emailjs from "@emailjs/browser";
 import { motion } from "framer-motion";
 import { FormEvent, useState } from "react";
 import {
@@ -22,34 +21,39 @@ export default function Contact() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
-    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
-    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
-
-    if (!serviceId || !templateId || !publicKey) {
-      setStatus("error");
-      setErrorMessage(
-        "The contact form isn't configured yet. Add your EmailJS keys to .env.local (see README)."
-      );
-      return;
-    }
-
     setStatus("sending");
     setErrorMessage("");
 
+    const form = event.currentTarget;
+    const data = new FormData(form);
+
     try {
-      await emailjs.sendForm(
-        serviceId,
-        templateId,
-        event.currentTarget,
-        publicKey
-      );
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.get("name"),
+          email: data.get("email"),
+          subject: data.get("subject"),
+          message: data.get("message"),
+        }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        throw new Error(result.error || "Something went wrong.");
+      }
+
       setStatus("success");
-      event.currentTarget.reset();
-    } catch {
+      form.reset();
+    } catch (err) {
       setStatus("error");
-      setErrorMessage("Something went wrong sending your message. Please try again or email me directly.");
+      setErrorMessage(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong sending your message. Please try again or email me directly."
+      );
     }
   };
 
