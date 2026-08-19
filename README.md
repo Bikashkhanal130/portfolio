@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bikash Khanal — Portfolio
 
-## Getting Started
+A personal portfolio built with Next.js, TypeScript, and Tailwind CSS. Includes a working
+contact form (powered by EmailJS) that emails messages directly to you — no backend server
+needed.
 
-First, run the development server:
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Editing content
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+All text content (name, contact info, experience, projects, skills, certifications) lives in
+one place: [`lib/data.ts`](lib/data.ts). Edit that file to update the site — you shouldn't need
+to touch the components for content changes.
 
-## Learn More
+Two things to fill in there before you go live:
 
-To learn more about Next.js, take a look at the following resources:
+- `profile.github` and `profile.linkedin` — currently placeholders, replace with your real URLs.
+- Each project's `codeHref` / `liveHref` — add real repo and live-demo links as they're ready.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Setting up the contact form (EmailJS)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The contact form uses [EmailJS](https://www.emailjs.com/) to send messages straight to your
+inbox from the browser, with no backend required.
 
-## Deploy on Vercel
+1. Create a free account at https://www.emailjs.com/.
+2. Add an **Email Service** (e.g. connect your Gmail — `Khanalbk18@gmail.com`) and note the
+   **Service ID**.
+3. Create an **Email Template** with `name`, `email`, `subject`, and `message` variables
+   matching the form fields in [`components/Contact.tsx`](components/Contact.tsx), and note the
+   **Template ID**.
+4. Grab your **Public Key** from Account → API Keys.
+5. Copy `.env.local.example` to `.env.local` and fill in the three values:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+NEXT_PUBLIC_EMAILJS_SERVICE_ID=your_service_id
+NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=your_template_id
+NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=your_public_key
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+6. Restart the dev server. Until these are set, submitting the form shows a friendly
+   "not configured yet" message instead of failing silently.
+
+If you deploy to Vercel/Netlify, add the same three variables in the project's environment
+variable settings.
+
+## Deploying
+
+The easiest option is [Vercel](https://vercel.com/new) — import this repo, add the three
+`NEXT_PUBLIC_EMAILJS_*` environment variables, and deploy. Any host that supports Next.js
+(Netlify, your own server, etc.) works too.
